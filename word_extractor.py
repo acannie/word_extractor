@@ -1,5 +1,5 @@
 import glob
-
+import keyword
 
 class WordExtractor:
     # 単語の辞書 (最終的に返す)
@@ -11,10 +11,24 @@ class WordExtractor:
     # 予約語一覧
     RESERVED_WORD_C = ["auto", "break", "case", "char", "const", "continue", "default", "do", "double", "else", "enum", "extern", "float", "for", "goto", "if",
                        "int", "long", "register", "return", "signed", "sizeof", "short", "static", "struct", "switch", "typedef", "union", "unsigned", "void", "volatile", "while"]
+    RESERVED_WORD_CPP = []
+    RESERVED_WORD_PYTHON = keyword.kwlist
+
+    # 予約語対応言語一覧
+    CORRESPONDED_LANGUAGE = {
+        "c": RESERVED_WORD_C, "c++": RESERVED_WORD_CPP, "python": RESERVED_WORD_PYTHON}
 
     # constructor
-    def __init__(self):
-        pass
+    def __init__(self, selected_language="c"):
+        self.set_language(selected_language.lower())
+
+    # 言語を設定
+    def set_language(self, selected_language="c"):
+        if WordExtractor.CORRESPONDED_LANGUAGE[selected_language] == None:
+            print("please check language name.")
+            self.RESERVED_WORD = WordExtractor.RESERVED_WORD_C  # デフォルトで C
+            return
+        self.RESERVED_WORD = WordExtractor.CORRESPONDED_LANGUAGE[selected_language]
 
     # 0 または 1 文字の単語を削除
 
@@ -49,23 +63,23 @@ class WordExtractor:
     # 1 行から単語を抽出し単語の辞書に格納
 
     def __make_word(self, spaceSeparated_word_list):
-        word = ""
         for spaceSeparated_word in spaceSeparated_word_list:
-            if spaceSeparated_word in self.RESERVED_WORD_C:  # 予約語は含めない (前後空白のときのみ有効)
-                continue
-            else:
-                print(spaceSeparated_word)
+            if not(spaceSeparated_word in self.RESERVED_WORD):  # 予約語は含めない (前後空白のときのみ有効)
+                word = ""
                 for c in spaceSeparated_word:
                     if c.isalpha():
-                        if self.__should_add_alphabet_to_word(c, word): # 単語が未完成
+                        # 単語が未完成
+                        if self.__should_add_alphabet_to_word(c, word):
                             word += c
                         else:  # 単語が完成した (キャメルケース等アルファベットが連続している場合)
-                            self.dictionary_set.add(word)
+                            WordExtractor.dictionary_set.add(word)
                             word = ""
                             word += c
                     else:  # 単語が完成した (スネークケース等)
-                        self.dictionary_set.add(word)
+                        WordExtractor.dictionary_set.add(word)
                         word = ""
+                WordExtractor.dictionary_set.add(word) # spaceSeparated_word を走査し終えた時点で word の中身があれば返す
+
 
     # 単語の辞書を作る
     def __make_word_dictionary(self, line_list):
@@ -75,22 +89,23 @@ class WordExtractor:
 
     # 単語の辞書に後処理を行う
     def __final_process(self):
-        self.dictionary_set = self.__delete_short_word(self.dictionary_set)
-        self.dictionary_set = self.__make_lower_in_dictionary_set(
-            self.dictionary_set)
+        WordExtractor.dictionary_set = self.__delete_short_word(WordExtractor.dictionary_set)
+        WordExtractor.dictionary_set = self.__make_lower_in_dictionary_set(
+            WordExtractor.dictionary_set)
+        WordExtractor.dictionary_set = sorted(WordExtractor.dictionary_set)
 
     # メインの処理
     def word_extract(self):
-        for file in self.FILE_LIST:
+        for file in WordExtractor.FILE_LIST:
             f = open(file)
             line_list = f.readlines()
             self.__make_word_dictionary(line_list)
             f.close()
 
         self.__final_process()
-        return self.dictionary_set
+        return WordExtractor.dictionary_set
 
 
 if __name__ == "__main__":
-    word_extractor = WordExtractor()
+    word_extractor = WordExtractor("python")  # choose from: c, c++, python
     print(word_extractor.word_extract())
