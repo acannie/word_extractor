@@ -22,10 +22,10 @@ class WordExtractor:
 
     # constructor
     def __init__(self, selected_language="c"):
-        self.set_language(selected_language.lower())
+        self.__set_language(selected_language.lower())
 
     # 言語を設定
-    def set_language(self, selected_language="c"):
+    def __set_language(self, selected_language="c"):
         if WordExtractor.CORRESPONDED_LANGUAGE[selected_language] == None:
             print("please check language name.")
             self.RESERVED_WORD = WordExtractor.RESERVED_WORD_C  # デフォルトで C
