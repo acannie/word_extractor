@@ -1,6 +1,7 @@
 import glob
 import keyword
 
+
 class WordExtractor:
     # 単語の辞書 (最終的に返す)
     dictionary_set = set()
@@ -11,7 +12,8 @@ class WordExtractor:
     # 予約語一覧
     RESERVED_WORD_C = ["auto", "break", "case", "char", "const", "continue", "default", "do", "double", "else", "enum", "extern", "float", "for", "goto", "if",
                        "int", "long", "register", "return", "signed", "sizeof", "short", "static", "struct", "switch", "typedef", "union", "unsigned", "void", "volatile", "while"]
-    RESERVED_WORD_CPP = []
+    RESERVED_WORD_CPP = RESERVED_WORD_C + ["asm", "catch", "class", "delete", "friend", "inline",
+                                                         "new", "operator", "overload", "private", "protected", "public", "template", "this", "throw", "try", "virtual"]
     RESERVED_WORD_PYTHON = keyword.kwlist
 
     # 予約語対応言語一覧
@@ -78,10 +80,11 @@ class WordExtractor:
                     else:  # 単語が完成した (スネークケース等)
                         WordExtractor.dictionary_set.add(word)
                         word = ""
-                WordExtractor.dictionary_set.add(word) # spaceSeparated_word を走査し終えた時点で word の中身があれば返す
-
+                # spaceSeparated_word を走査し終えた時点で word の中身があれば返す
+                WordExtractor.dictionary_set.add(word)
 
     # 単語の辞書を作る
+
     def __make_word_dictionary(self, line_list):
         for line in line_list:
             spaceSeparated_word_list = line.split(" ")
@@ -89,7 +92,8 @@ class WordExtractor:
 
     # 単語の辞書に後処理を行う
     def __final_process(self):
-        WordExtractor.dictionary_set = self.__delete_short_word(WordExtractor.dictionary_set)
+        WordExtractor.dictionary_set = self.__delete_short_word(
+            WordExtractor.dictionary_set)
         WordExtractor.dictionary_set = self.__make_lower_in_dictionary_set(
             WordExtractor.dictionary_set)
         WordExtractor.dictionary_set = sorted(WordExtractor.dictionary_set)
