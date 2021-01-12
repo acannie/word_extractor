@@ -6,14 +6,11 @@ class WordExtractor:
     # 単語の辞書 (最終的に返す)
     dictionary_set = set()
 
-    # 単語を抽出するファイルの一覧
-    FILE_LIST = glob.glob("./src/*")
-
     # 予約語一覧
     RESERVED_WORD_C = ["auto", "break", "case", "char", "const", "continue", "default", "do", "double", "else", "enum", "extern", "float", "for", "goto", "if",
                        "int", "long", "register", "return", "signed", "sizeof", "short", "static", "struct", "switch", "typedef", "union", "unsigned", "void", "volatile", "while"]
     RESERVED_WORD_CPP = RESERVED_WORD_C + ["asm", "catch", "class", "delete", "friend", "inline",
-                                                         "new", "operator", "overload", "private", "protected", "public", "template", "this", "throw", "try", "virtual"]
+                                           "new", "operator", "overload", "private", "protected", "public", "template", "this", "throw", "try", "virtual"]
     RESERVED_WORD_PYTHON = keyword.kwlist
 
     # 予約語対応言語一覧
@@ -21,10 +18,12 @@ class WordExtractor:
         "c": RESERVED_WORD_C, "c++": RESERVED_WORD_CPP, "python": RESERVED_WORD_PYTHON}
 
     # constructor
-    def __init__(self, selected_language="c"):
-        self.__set_language(selected_language.lower())
+    def __init__(self, src_folder="./src/", language="c"):
+        self.__set_language(language.lower())
+        self.FILE_LIST = glob.glob(src_folder + "*")  # 単語を抽出するファイルの一覧
 
     # 言語を設定
+
     def __set_language(self, selected_language="c"):
         if WordExtractor.CORRESPONDED_LANGUAGE[selected_language] == None:
             print("please check language name.")
@@ -64,7 +63,7 @@ class WordExtractor:
 
     # 1 行から単語を抽出し単語の辞書に格納
 
-    def __make_word(self, spaceSeparated_word_list):
+    def __make_word(self, spaceSeparated_word_list=[]):
         for spaceSeparated_word in spaceSeparated_word_list:
             if not(spaceSeparated_word in self.RESERVED_WORD):  # 予約語は含めない (前後空白のときのみ有効)
                 word = ""
@@ -85,7 +84,7 @@ class WordExtractor:
 
     # 単語の辞書を作る
 
-    def __make_word_dictionary(self, line_list):
+    def __make_word_dictionary(self, line_list=[]):
         for line in line_list:
             spaceSeparated_word_list = line.split(" ")
             self.__make_word(spaceSeparated_word_list)
@@ -100,7 +99,7 @@ class WordExtractor:
 
     # メインの処理
     def word_extract(self):
-        for file in WordExtractor.FILE_LIST:
+        for file in self.FILE_LIST:
             f = open(file)
             line_list = f.readlines()
             self.__make_word_dictionary(line_list)
@@ -111,5 +110,8 @@ class WordExtractor:
 
 
 if __name__ == "__main__":
-    word_extractor = WordExtractor("python")  # choose from: c, c++, python
+    # choose from: c, c++, python
+    word_extractor = WordExtractor(src_folder="./src/", language="python")
     print(word_extractor.word_extract())
+
+a = {"word": {"num": 2, "file": "file_name"}}
