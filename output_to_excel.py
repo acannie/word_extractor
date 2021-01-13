@@ -1,5 +1,6 @@
 import openpyxl
 import word_extractor
+import sys
 # from googletrans import Translator
 
 
@@ -94,6 +95,24 @@ class OutputExtractedWordToExcel (word_extractor.WordExtractorFromFolder):
 
 
 if __name__ == "__main__":
-    output_extracted_word_to_excel = OutputExtractedWordToExcel(
-        src_folder="./src/", language="c", wb_reference="reference.xlsx", wb_output="output.xlsx")
-    output_extracted_word_to_excel.output_extracted_word_to_excel()
+    args = sys.argv
+    if len(args) != 5:
+        print(
+            "Please run as --> \"pipenv run python output_to_excel.py [file or folder path] [language] [reference file path] [output file path]\"")
+        sys.exit()
+
+    path = args[1]
+    language = args[2]
+    reference_file_path = args[3]
+    output_file_path = args[4]
+
+    if not language in OutputExtractedWordToExcel.CORRESPONDED_LANGUAGE:
+        print("Please choose language from \"c\" or \"c++\" or \"python\"")
+        sys.exit()
+
+    if path[-1] == "/":
+        output_extracted_word_to_excel = OutputExtractedWordToExcel(
+            src_folder=path, language=language, wb_reference=reference_file_path, wb_output=output_file_path)
+        output_extracted_word_to_excel.output_extracted_word_to_excel()
+    else: # TODO 実装
+        pass
