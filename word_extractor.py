@@ -19,17 +19,17 @@ class WordExtractor:
 
     # constructor
     def __init__(self, src_folder="./src/", language="c"):
-        self.__set_language(language.lower())
+        self.__set_language(language=language.lower())
         self.FILE_LIST = glob.glob(src_folder + "*")  # 単語を抽出するファイルの一覧
 
     # 言語を設定
 
-    def __set_language(self, selected_language="c"):
-        if WordExtractor.CORRESPONDED_LANGUAGE[selected_language] == None:
+    def __set_language(self, language="c"):
+        if WordExtractor.CORRESPONDED_LANGUAGE[language] == None:
             print("please check language name.")
             self.RESERVED_WORD = WordExtractor.RESERVED_WORD_C  # デフォルトで C
             return
-        self.RESERVED_WORD = WordExtractor.CORRESPONDED_LANGUAGE[selected_language]
+        self.RESERVED_WORD = WordExtractor.CORRESPONDED_LANGUAGE[language]
 
     # 0 または 1 文字の単語を削除
 
@@ -51,7 +51,7 @@ class WordExtractor:
 
     def __is_new_word(self, c="", word=""):
         if c.islower():  # 小文字のとき
-            if word.isupper() and len(word) > 2:  # 単語すべてが大文字かつ 2 文字以上のとき
+            if word.isupper() and len(word) > 1:  # 単語すべてが大文字かつ 2 文字以上のとき
                 return True
             return False
         else:
@@ -68,7 +68,8 @@ class WordExtractor:
         word = ""
         for c in spaceSeparated_word:
             if c.isalpha():
-                if self.__is_new_word(c, word):  # 単語が完成した (文字を次の単語に含める。キャメルケース)
+                # 単語が完成した (文字を次の単語に含める。キャメルケース)
+                if self.__is_new_word(c=c, word=word):
                     WordExtractor.dictionary_set.add(word)
                     word = ""
                 word += c
@@ -99,9 +100,9 @@ class WordExtractor:
     # 単語の辞書に後処理を行う
     def __final_process(self):
         WordExtractor.dictionary_set = self.__delete_short_word(
-            WordExtractor.dictionary_set)
+            dictionary_set=WordExtractor.dictionary_set)
         WordExtractor.dictionary_set = self.__make_lower_in_dictionary_set(
-            WordExtractor.dictionary_set)
+            dictionary_set=WordExtractor.dictionary_set)
         WordExtractor.dictionary_set = sorted(WordExtractor.dictionary_set)
 
     # メインの処理
