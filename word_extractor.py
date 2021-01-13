@@ -21,9 +21,9 @@ class WordExtractor:
         "c": RESERVED_WORD_C, "c++": RESERVED_WORD_CPP, "python": RESERVED_WORD_PYTHON}
 
     # constructor
-    def __init__(self, src_folder="./src/", language="c"):
+    def __init__(self, src="sample.c", language="c"):
         self.__set_language(language=language.lower())
-        self.FILE_LIST = glob.glob(src_folder + "*")  # 単語を抽出するファイルの一覧
+        self.FILE_NAME = src  # 単語を抽出するファイル
 
     # 言語を設定
 
@@ -103,12 +103,11 @@ class WordExtractor:
 
     # メインの処理
     def create_word_dictionary(self):
-        for file_path in self.FILE_LIST:
-            f = open(file_path)
-            line_list = f.readlines()
-            self.__make_word_dictionary(
-                line_list=line_list, file_name=os.path.basename(file_path))
-            f.close()
+        f = open(self.FILE_NAME)
+        line_list = f.readlines()
+        self.__make_word_dictionary(
+            line_list=line_list, file_name=self.FILE_NAME)
+        f.close()
 
     # 単語一覧を返す
 
@@ -122,7 +121,34 @@ class WordExtractor:
         return WordExtractor.word_dictionary_information
 
 
+class WordExtractorFromFolder(WordExtractor):
+    # constructor
+    def __init__(self, src_folder="./src/", language="c"):
+        super().__init__(language)
+        self.FILE_LIST = glob.glob(src_folder + "*")  # 単語を抽出するファイルの一覧
+
+    # メインの処理
+    def create_word_dictionary_from_folder(self):
+        for file_path in self.FILE_LIST:
+            self.FILE_NAME = file_path
+            self.create_word_dictionary()
+
+    # 単語一覧を返す
+    def get_word_dictionary(self):
+        self.create_word_dictionary_from_folder()
+        return list(WordExtractor.word_dictionary_set)
+
+    # 単語情報一覧を返す
+    def get_word_dictionary_information(self):
+        self.create_word_dictionary_from_folder()
+        return WordExtractor.word_dictionary_information
+
+
 if __name__ == "__main__":
-    # choose from: c, c++, python
-    word_extractor = WordExtractor(src_folder="./src/", language="c")
+    # choose language from: c, c++, python
+    word_extractor = WordExtractor(src="sample.c", language="c")
     print(word_extractor.get_word_dictionary())
+
+    word_extractor_from_folder = WordExtractorFromFolder(
+        src_folder="./src/", language="c")
+    print(word_extractor_from_folder.get_word_dictionary())
