@@ -1,6 +1,7 @@
 import glob
 import keyword
 import os
+import sys
 
 
 class WordExtractor:
@@ -145,10 +146,23 @@ class WordExtractorFromFolder(WordExtractor):
 
 
 if __name__ == "__main__":
-    # choose language from: c, c++, python
-    word_extractor = WordExtractor(src="sample.c", language="c")
-    print(word_extractor.get_word_dictionary())
+    args = sys.argv
+    if len(args) != 3:
+        print(
+            "Please run as --> \"pipenv run python word_extractor.py [file or folder path] [language]\"")
+        sys.exit()
 
-    word_extractor_from_folder = WordExtractorFromFolder(
-        src_folder="./src/", language="c")
-    print(word_extractor_from_folder.get_word_dictionary())
+    path = args[1]
+    language = args[2]
+
+    if not language in WordExtractor.CORRESPONDED_LANGUAGE:
+        print("Please choose language from \"c\" or \"c++\" or \"python\"")
+        sys.exit()
+
+    if path[-1] == "/":
+        word_extractor_from_folder = WordExtractorFromFolder(
+            src_folder=path, language=language)
+        print(word_extractor_from_folder.get_word_dictionary())
+    else:
+        word_extractor = WordExtractor(src=path, language=language)
+        print(word_extractor.get_word_dictionary())
