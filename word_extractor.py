@@ -97,12 +97,12 @@ class WordExtractor:
         WordExtractor.word_dictionary_set.add(word)
         # 単語情報一覧に登録
         information = {"file_name": file_name,
-                       "word": word, "line_number": line_number}
+                       "word": word, "line_number": line_number+1}
         if not word in WordExtractor.word_dictionary_information:  # 重複を避ける。初めて登場したときのみ登録
             WordExtractor.word_dictionary_information[word] = information
 
     # メインの処理
-    def __create_word_dictionary(self):
+    def create_word_dictionary(self):
         for file_path in self.FILE_LIST:
             f = open(file_path)
             line_list = f.readlines()
@@ -113,12 +113,12 @@ class WordExtractor:
     # 単語一覧を返す
 
     def get_word_dictionary(self):
-        self.__create_word_dictionary()
+        self.create_word_dictionary()
         return list(WordExtractor.word_dictionary_set)
 
     # 単語情報一覧を返す
     def get_word_dictionary_information(self):
-        self.__create_word_dictionary()
+        self.create_word_dictionary()
         return WordExtractor.word_dictionary_information
 
 
