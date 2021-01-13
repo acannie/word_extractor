@@ -106,7 +106,7 @@ class WordExtractor:
         f = open(self.FILE_NAME)
         line_list = f.readlines()
         self.__make_word_dictionary(
-            line_list=line_list, file_name=self.FILE_NAME)
+            line_list=line_list, file_name=os.path.basename(self.FILE_NAME))
         f.close()
 
     # 単語一覧を返す

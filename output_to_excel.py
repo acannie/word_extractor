@@ -3,16 +3,19 @@ import word_extractor
 # from googletrans import Translator
 
 
-class OutputExtractedWordToExcel (word_extractor.WordExtractor):
+class OutputExtractedWordToExcel (word_extractor.WordExtractorFromFolder):
     # translator = Translator()
 
     def __init__(self, src_folder, language, wb_output="", wb_reference=""):
         super().__init__(src_folder, language)
-        self.WB_REFERENCE = openpyxl.load_workbook(wb_reference)
+        self.WB_REFERENCE_NAME = wb_reference
+        self.WB_REFERENCE = openpyxl.load_workbook(self.WB_REFERENCE_NAME)
         self.WS_REFERENCE = self.WB_REFERENCE.worksheets[0]
-        self.wb_output = openpyxl.load_workbook(wb_output)
+
+        self.WB_OUTPUT_NAME = wb_output
+        self.wb_output = openpyxl.load_workbook(self.WB_OUTPUT_NAME)
         self.ws_output = self.wb_output.worksheets[0]
-        self.create_word_dictionary()
+        self.create_word_dictionary_from_folder()
         self.__read_from_reference()
 
     def __read_from_reference(self):
@@ -86,7 +89,7 @@ class OutputExtractedWordToExcel (word_extractor.WordExtractor):
     def output_extracted_word_to_excel(self):
         self.__write_to_wb()
         self.WB_REFERENCE.close()
-        self.wb_output.save("output.xlsx")
+        self.wb_output.save(self.WB_OUTPUT_NAME)
         self.wb_output.close()
 
 
