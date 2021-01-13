@@ -38,7 +38,6 @@ class OutputExtractedWordToExcel (word_extractor.WordExtractor):
                 word=word_information["word"])
             self.ws_output.cell(row=current_row, column=6).value = self.__get_existence(
                 word=word_information["word"])
-            print(self.__get_existence(word=word_information["word"]))
             self.ws_output.cell(row=current_row, column=7).value = self.__get_details(
                 word=word_information["word"])
             current_row += 1
@@ -95,4 +94,3 @@ if __name__ == "__main__":
     output_extracted_word_to_excel = OutputExtractedWordToExcel(
         src_folder="./src/", language="c", wb_reference="reference.xlsx", wb_output="output.xlsx")
     output_extracted_word_to_excel.output_extracted_word_to_excel()
-    print(output_extracted_word_to_excel.REFERENCE_WORD_DICT)
